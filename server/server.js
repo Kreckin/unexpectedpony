@@ -11,7 +11,6 @@ const upload = multer({ dest: 'temp/' }); // set temp location of new files
 
 const app = express();
 
-<<<<<<< HEAD
 // ----- MIDDLEWARE -----
 app.use(express.static(path.join(__dirname, '/../web/public/')));
 app.use(bodyParser.json());
