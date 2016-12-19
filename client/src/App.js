@@ -6,7 +6,7 @@ import MapContainer from './components/MapContainer';
 import Blurb from './components/Blurb';
 import Login from './components/Login';
 import SavedList from './components/SavedList';
-
+import getSpots from './lib/getSpots';
 //This displays a different color depending on whether the tab is selected or not
 const TabIcon = ({ selected, title }) => {
   return (
@@ -16,12 +16,20 @@ const TabIcon = ({ selected, title }) => {
 
 class App extends Component {
   state={
-    markers: [{ id: '1', latitude: 30.268800, longitude: -97.740216, title: 'Caseys bat guy', image: require('./icons/tree-small.png'), category: 'nature' },
-        { id: '2', latitude: 30.269946, longitude: -97.743531, title: 'An unexpected pony', image: require('./icons/pony.png'), category: 'nature' }]
+    markers: []
+    // markers: [{ id: 1, latitude: 30.268800, longitude: -97.740216, title: 'Caseys bat guy', image: require('./icons/tree-small.png'), category: 'nature' },
+    //     { id: 2, latitude: 30.269946, longitude: -97.743531, title: 'An unexpected pony', image: require('./icons/tree-small.png'), category: 'nature' }]
+  }
+  componentWillMount() {
+    getSpots((data) => {
+      this.setState({ markers: data });
+      console.log('this is the data we\'re getting', this.state.markers);
+    });
   }
 
     render() {
-      return (
+
+      return !this.state.markers.length ? null : (
           <Router>
             <Scene key='root'>
               <Scene

@@ -1,7 +1,7 @@
 const neo4j = require('neo4j-driver').v1;
-const db = require('seraph')(require('./config.js').graph)
+const db = require('seraph')(require('./config.js').graph);
 const model = require('seraph-model');
-fergergergerg
+
 const Spot = model(db, 'Spot');
 const User = model(db, 'User');
 const Category = model(db, 'Categories');
@@ -10,30 +10,30 @@ const Category = model(db, 'Categories');
 // model.on('validate', validateAge);
 module.exports = {
   spots: {
-    get: function(params){
-      return new Promise(function(resolve, reject){
-        Spot.findAll(function (err, allOfTheseModels) {
-          if (err) reject(err)
-          else resolve (allOfTheseModels)
+    get: function () {
+      return new Promise((resolve, reject) => {
+        Spot.findAll((err, allOfTheseModels) => {
+          if (err) reject(err);
+          else resolve(allOfTheseModels);
         });
-      })
+      });
     },
     post: function(obj) {
-      return new Promise(function (resolve, reject) {
-        Spot.save(obj, function (err, savedObject) {
-          if (err) reject(err)
-          else resolve (savedObject)
-        })
-      })
+      return new Promise((resolve, reject) => {
+        Spot.save(obj, (err, savedObject) => {
+          if (err) reject(err);
+          else resolve(savedObject);
+        });
+      });
     }
   },
 
   users: {
-    get: function(params){
-      return new Promise(function(resolve, reject){
-        User.findAll(function (err, allOfTheseModels) {
+    get: function() {
+      return new Promise((resolve, reject) => {
+        User.findAll((err, allOfTheseModels) => {
           if (err) reject(err)
-          else resolve (allOfTheseModels)
+          else resolve(allOfTheseModels);
         });
       })
     },
