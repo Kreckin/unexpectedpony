@@ -13,9 +13,20 @@ it('returns 200 on real path',()=>{
 })
 })
 describe('database paths',()=>{
-  it('should return something',()=>{
+  it(' /spots should return something',()=>{
     return axios.get('http://localhost:4040/spots').then((response)=>{
-      console.log(response)
+      expect(response.data.length).toBeTruthy()
+      //console.log(response.data)
     }).catch((error)=>{console.log(error)})
+  })
+  it('/categories should return something',()=>{
+    return axios.get('http://localhost:4040/categories').then((response)=>{
+      expect(response.data.length).toBeTruthy()
+    }).catch((error)=>console.log(error))
+  })
+  it('/users should return something',()=>{
+    return axios.get('http://localhost:4040/users').then((response)=>{
+      expect(response.data.length).toBeTruthy();
+    }).catch((error)=>console.log(error))
   })
 })
