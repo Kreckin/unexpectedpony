@@ -1,7 +1,7 @@
 const neo4j = require('neo4j-driver').v1;
 const db = require('seraph')(require('./config.js').graph)
 const model = require('seraph-model');
-
+fergergergerg
 const Spot = model(db, 'Spot');
 const User = model(db, 'User');
 const Category = model(db, 'Categories');

@@ -8,7 +8,6 @@ cloudinary.config(require('./config').cloudinary);
 const multer = require('multer'); // Node.js middleware for handling `multipart/form-data`
 
 const upload = multer({ dest: 'temp/' }); // set temp location of new files
-
 const app = express();
 
 // ----- MIDDLEWARE -----
