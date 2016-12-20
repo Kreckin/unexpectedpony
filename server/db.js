@@ -1,5 +1,6 @@
 const neo4j = require('neo4j-driver').v1;
-const db = require('seraph')(require('./config.js').graph);
+const deploy = !process.env.server ? require('/config.js').graph : {server:process.env.server,user:process.env.user,pass:provess.env.pass}; 
+const db = require('seraph')deploy
 const model = require('seraph-model');
 
 const Spot = model(db, 'Spot');
@@ -25,7 +26,7 @@ module.exports = {
           else resolve(savedObject);
         });
       });
-    }
+    },
   },
 
   users: {
