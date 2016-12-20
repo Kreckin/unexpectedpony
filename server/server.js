@@ -4,12 +4,16 @@ const express = require('express');
 const db = require('./db');
 const bodyParser = require('body-parser');
 const cloudinary = require('cloudinary'); // stores images
-if(!process.env.cloud_name){
+
+if (!process.env.cloud_name){
   cloudinary.config(require('./config').cloudinary);
-}else{
-  {'cloud_name' : process.env.cloud_name+'',
-   'api_key':process.env.api_key,
-   'api_secret' :process.env.api_secret+''}.cloudinary
+} else {
+  const deploy = {
+    cloud_name: process.env.cloud_name,
+    api_key: process.env.api_key,
+    api_secret: process.env.api_secret
+  };
+  cloudinary.config(deploy);
 }
 
 const multer = require('multer'); // Node.js middleware for handling `multipart/form-data`
