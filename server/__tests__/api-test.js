@@ -33,4 +33,4 @@ describe('database paths', () => {
   //   }).catch((error)=>console.log(error))
   // })
 });
-  process.exitCode = 1;
+  //process.exitCode = 1;
