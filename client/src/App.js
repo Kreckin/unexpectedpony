@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //If you need any view or text, etc tags, import them below
-//import { } from 'react-native';
+//import { Text } from 'react-native';
 
 import { Router, Scene } from 'react-native-router-flux';
 import MapContainer from './components/MapContainer';
