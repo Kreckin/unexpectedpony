@@ -4,11 +4,21 @@ const express = require('express');
 const db = require('./db');
 const bodyParser = require('body-parser');
 const cloudinary = require('cloudinary'); // stores images
-cloudinary.config(require('./config').cloudinary);
+
+if (!process.env.cloud_name){
+  cloudinary.config(require('./config').cloudinary);
+} else {
+  const deploy = {
+    cloud_name: process.env.cloud_name,
+    api_key: process.env.api_key,
+    api_secret: process.env.api_secret
+  };
+  cloudinary.config(deploy);
+}
+
 const multer = require('multer'); // Node.js middleware for handling `multipart/form-data`
 
 const upload = multer({ dest: 'temp/' }); // set temp location of new files
-
 const app = express();
 
 // ----- MIDDLEWARE -----
@@ -124,3 +134,4 @@ app.post('/users', (req, res) => {
 const port = process.env.PORT || 4040;
 app.listen(port);
 console.log('Listening on port ' + port);
+module.exports = app
