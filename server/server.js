@@ -123,3 +123,4 @@ app.post('/users', (req, res) => {
 const port = process.env.PORT || 4040;
 app.listen(port);
 console.log('Listening on port ' + port);
+module.exports = app
