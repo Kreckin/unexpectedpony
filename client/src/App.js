@@ -4,7 +4,8 @@ import React, { Component } from 'react';
 
 import { Router, Scene } from 'react-native-router-flux';
 import MapContainer from './components/MapContainer';
-import Blurb from './components/Blurb';
+import SpotInfo from './components/SpotInfo';
+import AddSpot from './components/AddSpot';
 //The following aren't used in our project (yet) so they are commented out
 //import Login from './components/Login';
 //import SavedList from './components/SavedList';
@@ -24,17 +25,22 @@ class App extends Component {
     return (
         <Router>
           <Scene key='root'>             
-                <Scene 
-                  key='MapContainer'
-                  component={MapContainer}
-                  title='Map'
-                  //initial
-                />
-                <Scene 
-                  key='Blurb'
-                  component={Blurb}
-                  title='Blurb'
-                />
+            <Scene 
+              key='MapContainer'
+              component={MapContainer}
+              title='Map'
+              //initial
+            />
+            <Scene 
+              key='SpotInfo'
+              component={SpotInfo}
+              title='SpotInfo'
+            />
+            <Scene
+              key='AddSpot'
+              component={AddSpot}
+              title='Add spot'
+            />
           </Scene>
         </Router>
     );

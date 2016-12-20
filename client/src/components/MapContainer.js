@@ -62,7 +62,7 @@ class MapContainer extends Component {
               //This adds the mini blurb on the screen
               onPress={() => { reference[marker.id].showCallout(); }}
               //This changes the scene to the blurb with the marker passed down as props
-              onCalloutPress={() => Actions.Blurb({ marker })}
+              onCalloutPress={() => Actions.SpotInfo({ marker })}
             />
           ))}
         </MapView>
