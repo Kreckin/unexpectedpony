@@ -4,7 +4,7 @@ import { Actions } from 'react-native-router-flux';
 
 const { height, width } = Dimensions.get('window');
 
-const Blurb = (props) => {
+const SpotInfo = (props) => {
   return (
     <View style={styles.viewStyle}>
       <View style={styles.cardStyle}>
@@ -60,4 +60,4 @@ const styles = {
     backgroundColor: 'white',
   }
 };
-export default Blurb;
+export default SpotInfo;
