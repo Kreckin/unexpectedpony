@@ -1,5 +1,5 @@
 const neo4j = require('neo4j-driver').v1;
-const deploy = !process.env.server ? require('/config.js').graph : {server:process.env.server,user:process.env.user,pass:provess.env.pass}; 
+const deploy = !process.env.server ? require('/config.js').graph : {server:process.env.server,user:process.env.user,pass:process.env.pass}; 
 const db = require('seraph')deploy
 const model = require('seraph-model');
 
