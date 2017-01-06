@@ -165,9 +165,9 @@ export default class UploadPhotoContainer extends Component {
 
 const styles = StyleSheet.create({
   body: {
-    alignItems: 'center',
-    flex: 1,
-    backgroundColor: '#006F60',
+    //alignItems: 'center',
+    //flex: 1,
+    //backgroundColor: '#006F60',
   },
   image: {
     //later look how to maintain the image's aspect ratio

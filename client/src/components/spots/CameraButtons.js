@@ -1,38 +1,83 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import Carousel from 'react-native-looped-carousel';
 
-const CameraButtons = (props) => {
-  return (
-	<View style={styles.container}>
-		<TouchableOpacity style={styles.button} onPress={props.takePhoto}>
-			<Text style={styles.buttonText}>Take a picture</Text>
-		</TouchableOpacity>
-		<TouchableOpacity style={styles.button} onPress={props.chooseImage}>
-			<Text style={styles.buttonText}>Choose from gallery</Text>
-		</TouchableOpacity>
-    </View>
-  );
-};
+const { width, height } = Dimensions.get('window');
+
+export default class CameraButtons extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      size: { width, height },
+    };
+  }
+
+  _onLayoutDidChange = (e) => {
+    const layout = e.nativeEvent.layout;
+    this.setState({ size: { width: layout.width, height: layout.height } });
+  }
+
+  render() {
+    return (
+      <View style={{ flex: 1 }} onLayout={this._onLayoutDidChange}>
+
+        
+        <Carousel
+          delay={2000}
+          style={this.state.size}
+          autoplay
+          //pageInfo
+          onAnimateNextPage={(p) => console.log(p)}
+        >
+          <View style={[{ backgroundColor: '#BADA55' }, this.state.size]} />
+          <View style={[{ backgroundColor: 'red' }, this.state.size]} />
+          <View style={[{ backgroundColor: 'blue' }, this.state.size]} />
+
+        </Carousel>
+        <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={this.props.takePhoto}>
+      <Text style={styles.buttonText}>Take a picture</Text>
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.button} onPress={this.props.chooseImage}>
+      <Text style={styles.buttonText}>Choose from gallery</Text>
+    </TouchableOpacity>
+      </View>
+      </View>
+
+    );
+  }
+}
+// const CameraButtons = (props) => {
+//   return (
+// 	<View style={styles.container}>
+// 		
+//     </View>
+//   );
+// };
+
+
+ 
+
 const styles = {
-  container: {
-    flex: 1,
-    //flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center'
+  buttonContainer: {
+    position: 'absolute', 
+    top: height - 200, 
+    flexDirection: 'row'
   },
   button: {
     backgroundColor: '#00B89C',
-    width: 220,
-    height: 90,
+    width: 150,
+    height: 60,
     borderRadius: 10,
-    alignItems: 'center',
     justifyContent: 'center',
-    margin: 20
+    margin: 15
   },
   buttonText: {
     color: '#EFEFF4',
-    fontSize: 22,
-    alignItems: 'center'
+    fontSize: 18,
+    textAlign: 'center'
   },
 };
-export default CameraButtons;
+
