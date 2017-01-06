@@ -21,18 +21,18 @@ const styles = {
     justifyContent: 'center'
   },
   button: {
-    backgroundColor: 'gray',
+    backgroundColor: '#00B89C',
     width: 220,
     height: 90,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 10
+    margin: 20
   },
   buttonText: {
-    color: 'white',
+    color: '#EFEFF4',
     fontSize: 22,
     alignItems: 'center'
-  }
+  },
 };
 export default CameraButtons;

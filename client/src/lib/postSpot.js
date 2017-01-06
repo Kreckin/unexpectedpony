@@ -10,12 +10,24 @@ const postSpot = (data) => {
 //where the magic happens, we simulate a form and add everything we're passed to this form
   const form = new FormData();
   
-  form.append('title', data.title);
-  form.append('description', data.description);
-  form.append('category', data.category);
-  form.append('latitude', data.latitude);
-  form.append('longitude', data.longitude);
-  form.append('spot_image', photo);
+  if (data.title) {
+    form.append('title', data.title);
+  }
+  if (data.description) {
+    form.append('description', data.description);
+  }
+  if (data.category) {
+    form.append('category', data.category);
+  }
+  if (data.latitude) {
+    form.append('latitude', data.latitude);
+  }
+  if (data.longitude) {
+    form.append('longitude', data.longitude);
+  }
+  if (data.uri){
+    form.append('spot_image', photo);
+  }
 
   //a postConfig object that tells the fetch function what to do
   const postConfig = {
