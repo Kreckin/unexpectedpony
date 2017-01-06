@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
 import Carousel from 'react-native-looped-carousel';
 
 const { width, height } = Dimensions.get('window');
@@ -31,12 +31,15 @@ export default class CameraButtons extends Component {
           //pageInfo
           onAnimateNextPage={(p) => console.log(p)}
         >
-          <View style={[{ backgroundColor: '#BADA55' }, this.state.size]} />
-          <View style={[{ backgroundColor: 'red' }, this.state.size]} />
+          
+          <View style={[{ backgroundColor: 'red' }, this.state.size]}>
+            <Image source={require('../../icons/sad.png')} />
+          </View>
           <View style={[{ backgroundColor: 'blue' }, this.state.size]} />
 
         </Carousel>
         <View style={styles.buttonContainer}>
+        <Image source={require('../../icons/sad.png')} style={{ height: 50, width: 50 }} />
         <TouchableOpacity style={styles.button} onPress={this.props.takePhoto}>
       <Text style={styles.buttonText}>Take a picture</Text>
     </TouchableOpacity>
