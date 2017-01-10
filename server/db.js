@@ -1,10 +1,11 @@
-const neo4j = require('neo4j-driver').v1;
 const deploy = !process.env.server ? require('./config').graph_local : { server: process.env.server, user: process.env.user, pass: process.env.pass }; 
 const db = require('seraph')(deploy);
 const model = require('seraph-model');
 
 const Spot = model(db, 'Spot');
+Spot.useTimestamps();
 const User = model(db, 'User');
+User.useTimestamps();
 const Category = model(db, 'Categories');
 
 const spotUpdater = require('./controllers/spotUpdater');
@@ -13,7 +14,7 @@ const spotUpdater = require('./controllers/spotUpdater');
 // this will validate Spot whenever its updated/saved, anything not in this list will be removed 
 Spot.schema = {
   title: { type: String, required: true },
-  categories: { type: Array, required: true },
+  categories: { type: Array, required: false },
   img_url: { type: String, required: true },
   latitude: { type: Number, required: true },
   longitude: { type: Number, required: true },
@@ -58,7 +59,7 @@ const addSpotToGeomLayerAfterSave = function (spot) {
 //Spot.on('afterSave', addSpotToGeomLayerAfterSave);
 //------ USER VALIDATION ------
 User.schema = {
-  userID: { type: String, required: true },
+  facebookID: { type: String, required: true },
 };
 
 module.exports = {
@@ -108,10 +109,9 @@ module.exports = {
   users: {
     get: (id) => {
       return new Promise((resolve, reject) => {
-        User.where({ userID: id }, ((err, user) => {
+        User.read(id, ((err, user) => {
           if (err) reject(err);
           else {
-            console.log('this is the user!', user);
             resolve(user[0]);
           }
         }));
@@ -128,11 +128,11 @@ module.exports = {
               else resolve(savedObject);
             });
           } else {
-            resolve(module.exports.users.get(obj.userID));
+            resolve(module.exports.users.get(obj.id));
           }
         });
       });
-    }
+    },
   },
 
   categories: {
@@ -155,36 +155,35 @@ module.exports = {
   },
 
   votes: {
-    update: (uid, sid, voteType) => {
+    update: (userID, spotID, voteType) => {
       return new Promise((resolve, reject) => {
-        db.query(`MATCH (u:User) -[r:voted] -> (s:Spot) WHERE ID(u) = ${uid} AND ID(s) = ${sid} RETURN r`, (error, relationship) => {
-          if (error) { reject(error);} 
+        db.query(`MATCH (u:User) -[r:voted] -> (s:Spot) WHERE ID(u) = ${userID} AND ID(s) = ${spotID} RETURN r`, (error, relationship) => {
+          if (error) { reject(error); } 
           else {
             console.log('relationship', relationship);
-            if(relationship.length){
+            if (relationship.length) {
               relationship[0].properties.voteType = voteType;
               db.rel.update(relationship[0], (error, savedObject) => {
                 if (error) reject(error);
                 else resolve(savedObject);
               });
-            }
-            else{
-              db.relate(uid, 'voted', sid, {voteType: voteType}, (err, res) => {
+            } else {
+              db.relate(userID, 'voted', spotID, { voteType: voteType }, (err, res) => {
                 if (err) reject(err);
                 else resolve(res);
-              })
+              });
             }
           }
         });
       });
     },
-    updateSpotPercentage: (sid) => {
+    updateSpotPercentage: (spotID) => {
       return new Promise((resolve, reject) => {
-        db.relationships(sid, 'in', 'voted', (err, votes) => {
+        db.relationships(spotID, 'in', 'voted', (err, votes) => {
            if (err) { reject(err);}
            else {
             const voteInfo = spotUpdater(votes);
-            db.query(`MATCH (u:User) -[r:voted] -> (s:Spot) WHERE ID(s) = ${sid} RETURN s`, (error, node) => {
+            db.query(`MATCH (u:User) -[r:voted] -> (s:Spot) WHERE ID(s) = ${spotID} RETURN s`, (error, node) => {
               if (err) { reject(err); }
               else {
                 node[0].upvotes    = voteInfo.ups;
@@ -192,7 +191,7 @@ module.exports = {
                 node[0].mehvotes   = voteInfo.mehs;
                 node[0].percentage = voteInfo.percent;
 
-                db.save(node[0], function(err,node){
+                db.save(node[0], (err, node) => {
                   resolve(node);
                 });
               }
@@ -201,17 +200,15 @@ module.exports = {
         });
       });
     },
-    mehVote: (uid, sid) => { return module.exports.votes.update(uid, sid, 'mehvote')
-      .then(() => (module.exports.votes.updateSpotPercentage(sid)));
+    mehVote: (userID, spotID) => { return module.exports.votes.update(userID, spotID, 'mehvote')
+      .then(() => (module.exports.votes.updateSpotPercentage(spotID)));
     },
-    upVote: (uid, sid) => { return module.exports.votes.update(uid, sid, 'upvote')
-      .then(() => (module.exports.votes.updateSpotPercentage(sid)));
+    upVote: (userID, spotID) => { return module.exports.votes.update(userID, spotID, 'upvote')
+      .then(() => (module.exports.votes.updateSpotPercentage(spotID)));
     },
-    downVote: (uid, sid) => { return module.exports.votes.update(uid, sid, 'downvote')
-      .then(() => (module.exports.votes.updateSpotPercentage(sid)));
+    downVote: (userID, spotID) => { return module.exports.votes.update(userID, spotID, 'downvote')
+      .then(() => (module.exports.votes.updateSpotPercentage(spotID)));
     },
-
-
   },
 
   // votes: {
@@ -259,33 +256,53 @@ module.exports = {
   //     });
   //   }
   // },
+
   favorites: {
-    get: (userID) => {
+    get: (userID, spotID) => {
+      if (spotID === undefined) { // just a call to get all favs
+        return new Promise((resolve, reject) => {
+          db.query(`MATCH (u:User)-[r:favorite]->(s:Spot) WHERE ID(u) = ${userID} RETURN s LIMIT 100`, (error, favorites) => {
+            if (error) reject(error);
+            else resolve(favorites);
+          });
+        });
+      } else {
+        return new Promise((resolve, reject) => {
+          db.query(`MATCH (u:User)-[r:favorite]->(s:Spot) WHERE ID(u) = ${userID} RETURN s LIMIT 100`, (error, favorites) => {
+            if (error) reject(error);
+            else resolve(favorites);
+          });
+        });
+      }
+    },
+    add: (userID, spotID) => {
       return new Promise((resolve, reject) => {
-        db.query(`MATCH (u:User) -[r:favorite] -> (s:Spot) WHERE u.userID = '${userID}' RETURN s`, (error, favorites) => {
-          if (error) reject(error);
-          else resolve(favorites);
+        db.relationships(userID, 'all', 'favorite', (err, relationships) => {
+          if (err) {
+            console.log('error adding relationship', err);
+            reject(err);
+          } else {
+            const relationship = relationships.filter((rel) => rel.end === parseInt(spotID, 10));
+            if (!relationship.length) {
+              db.relate(userID, 'favorite', spotID, {}, (err, relationship) => {
+                if (err) reject(err);
+                else resolve(relationship);
+              });
+            } else reject('Already a relationship with this node');
+          }
         });
       });
     },
-    add: (uID, sID) => {
+    remove: (userID, spotID) => {
       return new Promise((resolve, reject) => {
-        db.relate(uID, 'favorite', sID, {}, (err, relationship ) => {
-          if (err) reject(err);
-          else resolve(relationship);
-        });
-      });
-    },
-    remove: (uID, sID) => {
-      return new Promise((resolve, reject) => {
-        db.relationships(uID, 'all', 'favorite', (err, relationships) => {
-          const relationship = relationships.filter((rel) => rel.end === parseInt(sID));
+        db.relationships(userID, 'all', 'favorite', (err, relationships) => {
+          const relationship = relationships.filter((rel) => rel.end === parseInt(spotID, 10));
           if (relationship.length) {
            db.rel.delete(relationship[0].id, (err) => {
              if (err) reject(err);
              else resolve('Relationship was deleted');
            });
-          } else reject('no relationship with this node');
+          } else reject('No relationship with this node');
         });
       });
     }

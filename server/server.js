@@ -50,9 +50,16 @@ app.get('/spots', (req, res) => {
     });
 });
 
+// TODO below
+// app.get('/spots/:spotId', function (req, res) {
+//   db.spots.get(req.params, function(err, data){
+//     res.send(data);
+//   })
+// })
+
 app.post('/spots', upload.single('spot_image'), (req, res) => {
   //we parse the latitude and longitude we get here so we save a number in our database
-  req.body.categories = JSON.parse(req.body.categories)
+  req.body.categories = JSON.parse(req.body.categories);
   req.body.latitude = parseFloat(req.body.latitude);
   req.body.longitude = parseFloat(req.body.longitude);
   if (req.file !== undefined) {
@@ -144,11 +151,6 @@ app.post('/users', (req, res) => {
     });
 });
 
-// app.get('/spots/:spotId', function (req, res) {
-//   db.spots.get(req.params, function(err, data){
-//     res.send(data);
-//   })
-// })
 app.get('/upvote/:uid/:sid', (req, res) => {
   console.log('req.params', req.params);
   db.votes.upVote(parseFloat(req.params.uid), parseFloat(req.params.sid))
@@ -197,10 +199,9 @@ app.get('/fetchLatLong/:address', (req, res) => {
     }
   });
 });
-//so for maxiumum confusion this route takes the userID prop on the user object
-app.get('/favorites/:userID', (req, res) => {
-  const uID = req.params.userID;
-  db.favorites.get(uID)
+
+app.get('/users/:userID/favorites', (req, res) => {
+  db.favorites.get(req.params.userID, req.params.spotID)
     .then((resolve) => {
       console.log('sending', resolve);
       res.send(resolve);
@@ -210,11 +211,9 @@ app.get('/favorites/:userID', (req, res) => {
       res.status(500).send(reject);
     });
 });
-//while these two take the id property of the user and the spot
-app.post('/favorites/add', (req, res) => {
-  const uID = req.body.userID;
-  const sID = req.body.spotID;
-  db.favorites.add(uID, sID)
+
+app.get('/users/:userID/favorites/:spotID', (req, res) => {
+  db.favorites.get(req.params.userID, req.params.spotID)
     .then((resolve) => {
       console.log('sending', resolve);
       res.send(resolve);
@@ -224,10 +223,21 @@ app.post('/favorites/add', (req, res) => {
       res.status(500).send(reject);
     });
 });
-app.post('/favorites/remove', (req, res) => {
-  const uID = req.body.userID;
-  const sID = req.body.spotID;
-  db.favorites.remove(uID, sID)
+
+app.post('/users/:userID/favorites/add', (req, res) => {
+  db.favorites.add(req.params.userID, req.body.spotID)
+    .then((resolve) => {
+      console.log('add sending', resolve);
+      res.send(resolve);
+    })
+    .catch((reject) => {
+      console.log('add rejecting with', reject);
+      res.status(500).send(reject);
+    });
+});
+
+app.post('/users/:userID/favorites/remove', (req, res) => {
+  db.favorites.remove(req.params.userID, req.body.spotID)
     .then((resolve) => {
       console.log('sending', resolve);
       res.send(resolve);

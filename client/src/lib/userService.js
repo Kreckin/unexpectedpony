@@ -1,11 +1,8 @@
-import React from 'react';
 import { AsyncStorage } from 'react-native';
-import { 
-  LoginButton, 
+import {
   AccessToken, 
   GraphRequest, 
   GraphRequestManager } from 'react-native-fbsdk';
-import { Actions } from 'react-native-router-flux';
 import config from './config.js';
 
 const userService = {
@@ -40,7 +37,7 @@ const userService = {
     };
 
     function cachePromise()  { new Promise ((resolve, reject) => {
-      // console.log('inside cachePromise-----', userService.currentUser);
+      console.log('inside cachePromise-----', userService.currentUser);
       AsyncStorage.setItem('@MySuperStore:user', JSON.stringify(userService.currentUser))
       .then((data) => {
         return;
@@ -111,7 +108,7 @@ const userService = {
                 if (error) console.log('Error from GraphRequest', err);
                 if (res) {
                   userService.currentUser.displayName = res.name;
-                  userService.currentUser.userID = res.id;
+                  userService.currentUser.facebookID = res.id;
                 }
               },
             );

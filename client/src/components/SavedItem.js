@@ -1,61 +1,104 @@
 import React from 'react';
 import { View, Text, Image, TouchableHighlight, Dimensions } from 'react-native';
+import { Actions } from 'react-native-router-flux';
 
 const { width } = Dimensions.get('window');
 
 const SavedItem = (props) => {
   return (
-    <View style={styles.itemStyle}>
-      <View style={styles.titleBarStyle}>
-        <Text style={styles.titleStyle}>{props.title}</Text>
-        <TouchableHighlight onPress={function () { props.removeSavedSpot(props.id); }}>
+    <TouchableHighlight onPress={function () { Actions.SpotInfo(props); }}>
+      <View style={styles.itemStyle}>
+        <View style={styles.imageContainerStyle}>
           <Image
-            style={styles.trashStyle}
-            source={require('../icons/trash.png')}
+            style={{ width: 50, height: 50 }}
+            source={{ uri: props.spot.img_url }}
           />
-        </TouchableHighlight>
+        </View>
+        <View style={styles.textContainerStyle}>
+          <View style={styles.titleBarStyle}>
+            <Text
+              style={styles.titleStyle}
+              numberOfLines={1}
+            >
+              {props.spot.title}
+            </Text>
+            <TouchableHighlight onPress={function () { props.removeSavedSpot(props.spot.id); }}>
+              <Image
+                style={styles.trashStyle}
+                source={require('../icons/trash.png')}
+              />
+            </TouchableHighlight>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Text
+              style={styles.descriptionStyle}
+              numberOfLines={2}
+            >
+              {props.spot.description}
+            </Text>
+            <Text
+              style={styles.distanceStyle}
+              numberOfLines={2}
+            >
+              {Math.round(props.spot.distance * 10) / 10} miles
+            </Text>
+          </View>
+        </View>
       </View>
-      <View style={{ flexDirection: 'row', borderWidth: 3 }}>
-        <Text style={styles.categoryStyle}>{props.description}</Text>
-        <Text style={styles.distanceStyle}>1000 feet away</Text>
-      </View>
-    </View>
+    </TouchableHighlight>
   );
 };
 const styles = {
   itemStyle: {
     alignSelf: 'center',
     flex: 1,
-    width: width - 20,
-    height: 60,
-    borderRadius: 4,
+    width: width - 10,
+    height: 80,
+    borderRadius: 1,
     borderColor: 'grey',
-    borderWidth: 2
+    borderWidth: 1,
+    backgroundColor: '#EFEFF4',
+    flexDirection: 'row'
   },
   titleStyle: {
-    fontSize: 12,
-    alignSelf: 'flex-start'
+    fontSize: 20,
+    alignSelf: 'flex-start',
+    color: '#006F60',
+    width: width - 120
+
   },
   titleBarStyle: {
     flexDirection: 'row',
-    borderWidth: 3,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    paddingBottom: 5
   },
   distanceStyle: {
-    fontSize: 14,
+    fontSize: 12,
     alignSelf: 'flex-end',
-    flex: 1,
-    textAlign: 'right'
+    textAlign: 'center',
+    color: '#006F60',
+    width: 40,
+    fontStyle: 'italic'
   },
-  categoryStyle: {
-    fontSize: 14,
+  descriptionStyle: {
+    fontSize: 12,
     alignSelf: 'flex-start',
-    flex: 1
+    flex: 1,
+    color: '#006F60'
   },
   trashStyle: {
-    height: 30,
-    width: 30,
+    height: 15,
+    width: 15,
     alignSelf: 'flex-end'
+  },
+  imageContainerStyle: {
+    justifyContent: 'center',
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+  textContainerStyle: {
+    width: width - 95
   }
 };
 export default SavedItem;

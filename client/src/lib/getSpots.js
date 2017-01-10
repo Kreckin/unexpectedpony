@@ -11,7 +11,7 @@ const getSpots = (lat, lon, distance,location) => {
       return response.json();
     })
     .then((data) => {
-      return resolve(distanceGetter(data,location));
+      return resolve(distanceGetter(data, location));
     })
     .catch((err) => {
       console.log('Error in get spots', err); 
@@ -19,7 +19,7 @@ const getSpots = (lat, lon, distance,location) => {
     });
   });
 };
-const distanceGetter = (data,location) => {
+const distanceGetter = (data, location) => {
             data.forEach((item) => {
              item.node.distance = distance(item.node.latitude, item.node.longitude, location.latitude, location.longitude);
             });
